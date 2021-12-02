@@ -2018,6 +2018,12 @@
   5770])
 
 (defn sonar-v1 [sonar-input]
+  (let [current-previous-pair-list (partition 2 1 sonar-input)
+        increase? (fn [[a b]] (< b a))]
+        (reduce (fn [count pair] (if (increase? pair) (inc count) count)) 0 current-previous-pair-list )))
+
+
+(defn sonar-v1-just-me [sonar-input]
   (let [current-previous-pair-fn (fn [pairs cur] (conj pairs [cur (first (last pairs))]))
         current-previous-pair-list (reduce current-previous-pair-fn [] sonar-input)
         increase? (fn [[a b]] (and b (< b a)))]
