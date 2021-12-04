@@ -1,9 +1,12 @@
 (ns advent-of-code-2021.day3)
 
+;; convets a binary number represented as a vector of 1s and 0s to an integer
 (defn b-to-int [b]
   (reduce +
           (map * (reverse b) (iterate (partial * 2) 1))))
 
+;; Extract a "strip" out of a collection, eg all the first elements, or all the 2nd elements.
+;; zero-based
 (defn strip-collection [input strip]
   (map #(nth %1 strip) input))
 
