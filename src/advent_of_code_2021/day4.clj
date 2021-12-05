@@ -1,6 +1,7 @@
 (ns advent-of-code-2021.day4
   (:require [clojure.data :as data]))
 
+;; Take the input and add in a list of rows and colums, to use to check if we won
 (defn process-boards [boards]
   (map (fn [board]
          {:board board
@@ -12,12 +13,14 @@
                        [0 1 2 3 4]))})
        boards))
 
+(defn remove-number [col number]
+  (filter #(not= number %) col))
 
-(defn update-rows-and-columns [{:keys [board rows-and-columns]} number]
-  (let [remove-number (fn [col] (filter #(not= number %) col))]
-        {:board (remove-number board)
-         :rows-and-columns (map remove-number rows-and-columns)}))
+(defn remove-number-from-boards [{:keys [board rows-and-columns]} number]
+  {:board (remove-number board number)
+   :rows-and-columns (map #(remove-number % number) rows-and-columns)})
 
+;; Winning boards will have an empty list as one of the rows or columns
 (defn get-winning-boards [boards]
   (reduce (fn [acc {:keys [board rows-and-columns]}]
             (if (not-empty (filter #(= [] %) rows-and-columns))
@@ -30,33 +33,38 @@
   (let [winning-board (get-winning-boards boards)]
     (* (reduce + (first winning-board)) number)))
 
+
+
 (defn play-bingo-v1 [{:keys [numbers boards]}]
   (loop [numbers numbers
          boards (process-boards boards)]
     (let [number (first numbers)
-          new-boards (map #(update-rows-and-columns % number) boards)]
+          new-boards (map #(remove-number-from-boards % number) boards)]
       (if (not-empty (get-winning-boards new-boards))
         (create-result new-boards number)
         (recur (rest numbers) new-boards)))))
 
+
+
 (defn play-bingo-v2 [{:keys [numbers boards]}]
   (loop [numbers numbers
-         boards (process-boards boards)
-         winning-boards []]
+         boards (process-boards boards)]
     (let [number (first numbers)
-          new-boards (map #(update-rows-and-columns % number) boards)
+          new-boards (map #(remove-number-from-boards % number) boards)
           new-winning-boards (get-winning-boards new-boards)
           new-minus-winning-boards (filter #(reduce (fn [res winner]
                                                       (and res (not= (:board %) winner)))
-                                                    true 
+                                                    true
                                                     new-winning-boards)
                                            new-boards)]
 
       (if (empty? new-minus-winning-boards)
         (create-result new-boards number)
         (recur (rest numbers)
-               new-minus-winning-boards
-               (conj new-winning-boards winning-boards))))))
+               new-minus-winning-boards)))))
+
+
+
 
 
 

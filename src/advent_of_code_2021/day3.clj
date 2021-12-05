@@ -10,8 +10,11 @@
 (defn strip-collection [input strip]
   (map #(nth %1 strip) input))
 
+
 (defn highest-freq? [m] (reduce (fn [[rk rv :as r] [vk vv :as v]] (if (> vv rv) v (if (= vv rv) (if (= vk 1) v r) r))) m))
 (defn lowest-freq?  [m] (reduce (fn [[rk rv :as r] [vk vv :as v]] (if (< vv rv) v (if (= vv rv) (if (= vk 0) v r) r))) m))
+
+
 
 (defn gamma_epsilon [input]
   (let [strips (map (partial strip-collection input) (take (count (first input)) (iterate inc 0)))
